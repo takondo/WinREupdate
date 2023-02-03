@@ -4,11 +4,17 @@ This is a sample PowerShell script to help automate the patching of WinRE images
 - PatchWinREScript_2004plus.ps1 : This is for Windows 10 version 2004 and newer, including Windows 11
 - PatchWinREScript_General.ps1  : This is for Windows 10 version 1909 and older, but executes on all versions.
 
+This script will:
+1. Mount the existing WinRE image
+2. Updates the WinRE image with the specified package
+3. Unmount the WinRE image
+4. If the BitLocker TPM protector is present, re-establish the trust between BitLocker and WinRE
+
 ## Usage
 
 There are 2 parameters that can be passed to the script
 
-workDir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specifies the scratch space used. Optional (defaults to system TEMP folder).<br>
+workDir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specifies the scratch space used to patch WinRE. Optional (defaults to system TEMP folder).<br>
 packagePath&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specifies the package to be used to update the WinRE. Required. Can be a local path or a remote UNC path.<br>
 
 
