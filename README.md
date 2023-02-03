@@ -8,9 +8,9 @@ This is a sample PowerShell script to help automate the patching of WinRE images
 
 There are 2 parameters that can be passed to the script
 
-workDir             Specifies the scratch space used. Optional (defaults to system TEMP folder).
-packagePath         Specifies the package to be used to update the WinRE. Required. Can be a local path or a remote UNC path.
+workDir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specifies the scratch space used. Optional (defaults to system TEMP folder).<br>
+packagePath&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specifies the package to be used to update the WinRE. Required. Can be a local path or a remote UNC path.<br>
 
 
 Example:
-.\PatchWinREScript_2004plus.ps1 -packagePath "\\server\share\windows10.0-kb5021043-x64_efa19d2d431c5e782a59daaf2d04d026bb8c8e76.cab"
+> .\PatchWinREScript_2004plus.ps1 -packagePath "\\\\server\share\windows10.0-kb5021043-x64_efa19d2d431c5e782a59daaf2d04d026bb8c8e76.cab"
