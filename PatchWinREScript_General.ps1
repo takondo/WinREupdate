@@ -29,6 +29,105 @@ function LogMessage([string]$message)
 	Write-Host $message
 }
 
+function IsTPMBasedProtector
+{
+	$DriveLetter = $env:SystemDrive
+
+	LogMessage("Checking BitLocker status")
+	$BitLocker = Get-WmiObject -Namespace "Root\cimv2\Security\MicrosoftVolumeEncryption" -Class "Win32_EncryptableVolume" -Filter "DriveLetter = '$DriveLetter'"
+
+	if(-not $BitLocker)
+	{
+		LogMessage("No BitLocker object")
+		return $False
+	}
+
+	$protectionEnabled = $False
+    switch ($BitLocker.GetProtectionStatus().protectionStatus){
+
+		("0"){
+			LogMessage("Unprotected")
+			break
+		}
+
+		("1"){
+			LogMessage("Protected")
+			$protectionEnabled = $True
+			break
+		}
+
+		("2"){
+			LogMessage("Uknown")
+			break
+		}
+
+		default{
+			LogMessage("NoReturn")
+			break
+		}
+
+	}
+
+	if (!$protectionEnabled)
+	{
+		LogMessage("Bitlocker isn’t enabled on the OS")
+		return $False
+	}
+
+    $ProtectorIds = $BitLocker.GetKeyProtectors("0").volumekeyprotectorID       
+
+    $return = $False
+
+    foreach ($ProtectorID in $ProtectorIds){
+
+		$KeyProtectorType = $BitLocker.GetKeyProtectorType($ProtectorID).KeyProtectorType
+
+		switch($KeyProtectorType){
+
+			"1"{
+				LogMessage("Trusted Platform Module (TPM)")
+				$return = $True
+				break
+			}
+
+
+			"4"{
+				LogMessage("TPM And PIN")
+				$return = $True
+				break
+			}
+
+			"5"{
+				LogMessage("TPM And Startup Key")
+				$return = $True
+				break
+			}
+
+			"6"{
+				LogMessage("TPM And PIN And Startup Key")
+				$return = $True
+				break
+			}
+
+			default {break}
+
+		}#endSwitch
+
+
+	}#EndForeach
+
+	if ($return)
+	{
+		LogMessage("Has TPM-based protector")
+	}
+	else
+	{
+		LogMessage("Doesn't have TPM-based protector")
+	}
+
+	return $return
+}
+
 function SetRegistrykeyForSuccess
 {
 	reg add  HKLM\SOFTWARE\Microsoft\PushButtonReset /v WinREPathScriptSucceed /d 1 /f
@@ -48,7 +147,7 @@ function TargetfileVersionExam([string]$mountDir)
 	
 	if (!($versionString -eq "10.0"))
 	{
-		LogMessage("Not Windows 10+")
+		LogMessage("Not Windows 10 or later")
 		return $False
 	}
 	
@@ -127,7 +226,7 @@ function TargetfileVersionExam([string]$mountDir)
 function PatchPackage([string]$mountDir, [string]$packagePath)
 {
 	# Exam target binary
-	$hasUpdated =TargetfileVersionExam($mountDir)
+	$hasUpdated = TargetfileVersionExam($mountDir)
 	
 	if ($hasUpdated)
 	{
@@ -297,6 +396,17 @@ if ($LASTEXITCODE -eq 0)
 		{
 			if ($hasUpdated)
 			{
+				if (IsTPMBasedProtector)
+				{
+					# Disable WinRE and re-enable it to let new WinRE be trusted by BitLocker
+					LogMessage("Disable WinRE")
+					reagentc /disable
+					LogMessage("Re-enable WinRE")
+					reagentc /enable
+					
+					reagentc /info
+				}
+				
 				# Leave a breadcrumb indicates the script has succeed
 				SetRegistrykeyForSuccess
 			}
@@ -323,4 +433,3 @@ else
 # Cleanup Mount directory in the end
 LogMessage("Delete mount direcotry")
 Remove-Item $mountDir -Recurse
-
