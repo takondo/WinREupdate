@@ -19,4 +19,6 @@ packagePath&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specifies the package to be used 
 
 
 Example:
-> .\PatchWinREScript_2004plus.ps1 -packagePath "\\\\server\share\windows10.0-kb5021043-x64_efa19d2d431c5e782a59daaf2d04d026bb8c8e76.cab"
+```
+.\PatchWinREScript_2004plus.ps1 -packagePath "\\\\server\share\windows10.0-kb5021043-x64_efa19d2d431c5e782a59daaf2d04d026bb8c8e76.cab"
+```
