@@ -8,7 +8,7 @@ This script will:
 1. Mount the existing WinRE image
 2. Updates the WinRE image with the specified package
 3. Unmount the WinRE image
-4. If the BitLocker TPM protector is present, re-establish the trust between BitLocker and WinRE
+4. If the BitLocker TPM protector is present, reconfigures WinRE for BitLocker service
 
 ## Usage
 
